@@ -430,3 +430,6 @@ FodyWeavers.xsd
 
 # Ignorar relatórios e JSONs gerados localmente
 output/
+
+# Dashboard output
+Dashboard.html
