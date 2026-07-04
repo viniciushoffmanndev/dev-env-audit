@@ -1,14 +1,13 @@
 <#
 .SYNOPSIS
-    Módulo de cálculo de tamanho de caches e arquivos temporários.
+    Cache and temporary files sizing module.
 .DESCRIPTION
-    Este script mede o espaço ocupado por caches de desenvolvimento (npm, pip)
-    e temporários do Windows (Temp) de forma segura e somente leitura.
+    Measures space occupied by package managers (npm, pip) and
+    Windows system temp folders safely.
 #>
 
-Write-Host "[*] Iniciando varredura e cálculo de caches..." -ForegroundColor Cyan
+Write-Host "[*] Starting cache analysis..." -ForegroundColor Cyan
 
-# Função utilitária para calcular o tamanho de uma pasta em GB de forma segura
 function Get-FolderSizeGB {
     param (
         [string]$Path
@@ -19,7 +18,6 @@ function Get-FolderSizeGB {
     }
 
     try {
-        # Busca todos os arquivos recursivamente, ignorando erros de acesso/permissão
         $files = Get-ChildItem -Path $Path -Recurse -File -ErrorAction SilentlyContinue
         $totalBytes = ($files | Measure-Object -Property Length -Sum).Sum
         
@@ -32,7 +30,6 @@ function Get-FolderSizeGB {
     }
 }
 
-# 1. Mapeamento dos caminhos de cache padrões no Windows
 $userProfile = $env:USERPROFILE
 $localAppData = $env:LOCALAPPDATA
 
@@ -43,36 +40,33 @@ $paths = @{
     PipCache    = "$localAppData\pip\Cache"
 }
 
-Write-Host "[*] Medindo caches de desenvolvimento (NPM, Pip)..." -ForegroundColor Yellow
+Write-Host "[*] Measuring development caches (NPM, Pip)..." -ForegroundColor Yellow
 $npmSize = Get-FolderSizeGB -Path $paths.NpmCache
 $pipSize = Get-FolderSizeGB -Path $paths.PipCache
 
-Write-Host "[*] Medindo arquivos temporários do sistema..." -ForegroundColor Yellow
+Write-Host "[*] Measuring system temporary folders..." -ForegroundColor Yellow
 $winTempSize = Get-FolderSizeGB -Path $paths.WindowsTemp
 $userTempSize = Get-FolderSizeGB -Path $paths.UserTemp
 
-# Calcula o total que pode ser limpo com segurança
-$totalRecuperavel = $npmSize + $pipSize + $winTempSize + $userTempSize
+$totalRecoverable = $npmSize + $pipSize + $winTempSize + $userTempSize
 
-# 2. Criando o Objeto Estruturado Principal
 $cacheData = [PSCustomObject]@{
-    Modulo      = "Caches"
-    DataColeta  = (Get-Date -Format "yyyy-MM-dd HH:mm:ss")
-    CachesDesenvolvimento = [PSCustomObject]@{
+    Module        = "Caches"
+    CollectedAt   = (Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+    DevelopmentCaches = [PSCustomObject]@{
         NPM_Cache_GB = $npmSize
         PIP_Cache_GB = $pipSize
     }
-    TemporariosSistema = [PSCustomObject]@{
+    SystemTemporary = [PSCustomObject]@{
         Windows_Temp_GB = $winTempSize
         User_Temp_GB    = $userTempSize
     }
-    Resumo = [PSCustomObject]@{
-        Total_Limpeza_Segura_GB = [Math]::Round($totalRecuperavel, 2)
+    Summary = [PSCustomObject]@{
+        TotalSafeCleanup_GB = [Math]::Round($totalRecoverable, 2)
     }
 }
 
-# 3. Define o caminho de saída e salva o JSON
 $outputPath = Join-Path -Path $PSScriptRoot -ChildPath "..\output\Caches.json"
 $cacheData | ConvertTo-Json -Depth 5 | Out-File -FilePath $outputPath -Encoding UTF8
 
-Write-Host "[+] Varredura de caches concluída! Dados salvos em: output\Caches.json" -ForegroundColor Green
+Write-Host "[+] Cache analysis completed! Data saved to: output\Caches.json" -ForegroundColor Green

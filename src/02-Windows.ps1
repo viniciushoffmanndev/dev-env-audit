@@ -1,40 +1,33 @@
 <#
 .SYNOPSIS
-    Módulo de coleta de dados do Sistema Operacional (Windows).
+    Operating System data collection module (Windows).
 .DESCRIPTION
-    Este script coleta informações sobre a versão do Windows, build
-    e calcula o tempo de atividade (Uptime) do notebook.
+    This script collects information about Windows version, build,
+    and calculates system uptime.
 #>
 
-Write-Host "[*] Iniciando auditoria do Windows..." -ForegroundColor Cyan
+Write-Host "[*] Starting Windows audit..." -ForegroundColor Cyan
 
-# 1. Coleta de Informações do Sistema Operacional
 $os = Get-CimInstance -ClassName Win32_OperatingSystem
+$uptime = (Get-Date) - $os.LastBootUpTime
 
-# 2. Cálculo de Uptime (Tempo que o PC está ligado)
-$tempoLigado = (Get-Date) - $os.LastBootUpTime
-
-# 3. Criando o Objeto Estruturado
 $windowsData = [PSCustomObject]@{
-    Modulo      = "Windows"
-    DataColeta  = (Get-Date -Format "yyyy-MM-dd HH:mm:ss")
-    SistemaOperacional = [PSCustomObject]@{
-        Edicao      = $os.Caption.Replace("Microsoft ", "").Trim()
-        Versao      = $os.Version
-        Build       = $os.BuildNumber
-        Arquitetura = $os.OSArchitecture
+    Module        = "Windows"
+    CollectedAt   = (Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+    OperatingSystem = [PSCustomObject]@{
+        Edition      = $os.Caption.Replace("Microsoft ", "").Trim()
+        Version      = $os.Version
+        Build        = $os.BuildNumber
+        Architecture = $os.OSArchitecture
     }
     Status = [PSCustomObject]@{
-        UltimoBoot          = $os.LastBootUpTime.ToString("yyyy-MM-dd HH:mm:ss")
-        TempoLigado_Horas   = [Math]::Round($tempoLigado.TotalHours, 2)
-        TempoLigado_Dias    = [Math]::Round($tempoLigado.TotalDays, 2)
+        LastBoot     = $os.LastBootUpTime.ToString("yyyy-MM-dd HH:mm:ss")
+        Uptime_Hours = [Math]::Round($uptime.TotalHours, 2)
+        Uptime_Days  = [Math]::Round($uptime.TotalDays, 2)
     }
 }
 
-# Define o caminho de saída
 $outputPath = Join-Path -Path $PSScriptRoot -ChildPath "..\output\Windows.json"
-
-# Converte e salva
 $windowsData | ConvertTo-Json -Depth 5 | Out-File -FilePath $outputPath -Encoding UTF8
 
-Write-Host "[+] Auditoria do Windows concluída! Dados salvos em: output\Windows.json" -ForegroundColor Green
+Write-Host "[+] Windows audit completed! Data saved to: output\Windows.json" -ForegroundColor Green

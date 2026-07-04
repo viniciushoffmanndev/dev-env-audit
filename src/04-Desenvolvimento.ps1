@@ -1,12 +1,12 @@
 <#
 .SYNOPSIS
-    Módulo de detecção do ecossistema de desenvolvimento (Versão Corrigida).
+    Development ecosystem detection module.
 .DESCRIPTION
-    Este script verifica quais linguagens, runtimes e ferramentas estão instaladas
-    e trata codificações de texto especiais como o UTF-16 do WSL.
+    Checks for languages, runtimes, and tools installed in the system PATH,
+    safely handling complex string encodings like WSL UTF-16 output.
 #>
 
-Write-Host "[*] Iniciando varredura do ambiente de desenvolvimento..." -ForegroundColor Cyan
+Write-Host "[*] Starting development environment scan..." -ForegroundColor Cyan
 
 function Get-CommandVersion {
     param (
@@ -16,23 +16,18 @@ function Get-CommandVersion {
 
     $cmdExists = Get-Command $CommandName -ErrorAction SilentlyContinue
     if (-not $cmdExists) {
-        return "Não Instalado"
+        return "Not Installed"
     }
 
     try {
         if ($CommandName -eq "wsl") {
-            # Se for o WSL, usamos o argumento -v que traz apenas números e evita textos longos regionalizados
             $output = & $CommandName "-v" 2>$null | Select-Object -First 1
-            
-            # Se o output vier codificado errado, limpamos os bytes nulos e filtramos apenas o que importa (versão)
             if ($output) {
                 $output = [string]$output -replace "`0", ""
                 $output = $output.Trim()
             }
-            
-            # Se mesmo assim falhar ou vier vazio, pegamos uma resposta padrão segura
             if (-not $output) {
-                $output = "Instalado (Subprocesso Ativo)"
+                $output = "Installed (Subprocess Active)"
             }
         } else {
             $output = & $CommandName $VersionArgs 2>$null | Select-Object -First 1
@@ -41,35 +36,33 @@ function Get-CommandVersion {
         if ($output) {
             return $output.Trim()
         }
-        return "Instalado (Versão Indisponível)"
+        return "Installed (Version Unavailable)"
     }
     catch {
-        return "Erro ao ler versão"
+        return "Error reading version"
     }
 }
 
-# 1. Varredura das ferramentas básicas e runtimes
 $devTools = [PSCustomObject]@{
-    Modulo      = "Desenvolvimento"
-    DataColeta  = (Get-Date -Format "yyyy-MM-dd HH:mm:ss")
-    Ferramentas = [PSCustomObject]@{
-        Git              = Get-CommandVersion -CommandName "git" -VersionArgs "version"
-        Docker           = Get-CommandVersion -CommandName "docker" -VersionArgs "-v"
-        WSL              = Get-CommandVersion -CommandName "wsl" -VersionArgs "--status"
+    Module      = "Development"
+    CollectedAt = (Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+    Tools = [PSCustomObject]@{
+        Git    = Get-CommandVersion -CommandName "git" -VersionArgs "version"
+        Docker = Get-CommandVersion -CommandName "docker" -VersionArgs "-v"
+        WSL    = Get-CommandVersion -CommandName "wsl"
     }
     Runtimes = [PSCustomObject]@{
-        Node             = Get-CommandVersion -CommandName "node" -VersionArgs "-v"
-        NPM              = Get-CommandVersion -CommandName "npm" -VersionArgs "-v"
-        PNPM             = Get-CommandVersion -CommandName "pnpm" -VersionArgs "-v"
-        Yarn             = Get-CommandVersion -CommandName "yarn" -VersionArgs "-v"
-        Python           = Get-CommandVersion -CommandName "python" -VersionArgs "--version"
-        Pip              = Get-CommandVersion -CommandName "pip" -VersionArgs "--version"
-        Poetry           = Get-CommandVersion -CommandName "poetry" -VersionArgs "--version"
+        Node   = Get-CommandVersion -CommandName "node" -VersionArgs "-v"
+        NPM    = Get-CommandVersion -CommandName "npm" -VersionArgs "-v"
+        PNPM   = Get-CommandVersion -CommandName "pnpm" -VersionArgs "-v"
+        Yarn   = Get-CommandVersion -CommandName "yarn" -VersionArgs "-v"
+        Python = Get-CommandVersion -CommandName "python" -VersionArgs "--version"
+        Pip    = Get-CommandVersion -CommandName "pip" -VersionArgs "--version"
+        Poetry = Get-CommandVersion -CommandName "poetry" -VersionArgs "--version"
     }
 }
 
-# 2. Define o caminho de saída e salva o JSON
-$outputPath = Join-Path -Path $PSScriptRoot -ChildPath "..\output\Desenvolvimento.json"
+$outputPath = Join-Path -Path $PSScriptRoot -ChildPath "..\output\Development.json"
 $devTools | ConvertTo-Json -Depth 5 | Out-File -FilePath $outputPath -Encoding UTF8
 
-Write-Host "[+] Varredura de desenvolvimento concluída! Dados salvos em: output\Desenvolvimento.json" -ForegroundColor Green
+Write-Host "[+] Development environment scan completed! Data saved to: output\Development.json" -ForegroundColor Green
