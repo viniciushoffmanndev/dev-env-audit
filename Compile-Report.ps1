@@ -1,0 +1,55 @@
+<#
+.SYNOPSIS
+    HTML Report Compiler.
+.DESCRIPTION
+    This script reads the raw JSON telemetries from the 'output' directory
+    and injects them into the HTML template, generating the final dashboard.
+#>
+
+Write-Host "[*] Iniciando compilação do relatório gráfico..." -ForegroundColor Cyan
+
+# 1. Definição de caminhos
+$pathOutput = Join-Path -Path $PSScriptRoot -ChildPath "output"
+$pathTemplate = Join-Path -Path $PSScriptRoot -ChildPath "template\template.html"
+$pathFinalReport = Join-Path -Path $PSScriptRoot -ChildPath "Dashboard.html"
+
+if (-not (Test-Path $pathTemplate)) {
+    Write-Error "Erro: Arquivo template.html não foi encontrado!"
+    return
+}
+
+# 2. Carrega e decodifica os arquivos JSON de forma segura
+$hwData    = Get-Content -Raw -Path (Join-Path $pathOutput "Hardware.json") | ConvertFrom-Json
+$winData   = Get-Content -Raw -Path (Join-Path $pathOutput "Windows.json") | ConvertFrom-Json
+$cacheData = Get-Content -Raw -Path (Join-Path $pathOutput "Caches.json") | ConvertFrom-Json
+
+# 3. Lê o conteúdo do arquivo de template
+$htmlContent = Get-Content -Raw -Path $pathTemplate
+
+# 4. Faz as substituições das tags pelos dados reais (Casando com o padrão em inglês)
+$htmlContent = $htmlContent.Replace("{{DATA_COLETA}}", $hwData.CollectedAt)
+
+# Dados do Hardware
+$htmlContent = $htmlContent.Replace("{{HW_CPU}}", $hwData.CPU.Name)
+$htmlContent = $htmlContent.Replace("{{HW_RAM}}", $hwData.RAM.TotalInstalled_GB)
+$htmlContent = $htmlContent.Replace("{{HW_BIOS}}", $hwData.BIOS.Version)
+
+# Dados do Windows
+$htmlContent = $htmlContent.Replace("{{WIN_NAME}}", $winData.OperatingSystem.Edition)
+$htmlContent = $htmlContent.Replace("{{WIN_BUILD}}", $winData.OperatingSystem.Build)
+$htmlContent = $htmlContent.Replace("{{WIN_UPTIME}}", "$($winData.Status.Uptime_Hours) Hours")
+
+# Dados de Caches
+$htmlContent = $htmlContent.Replace("{{CACHE_NPM}}", $cacheData.DevelopmentCaches.NPM_Cache_GB)
+$htmlContent = $htmlContent.Replace("{{CACHE_PIP}}", $cacheData.DevelopmentCaches.PIP_Cache_GB)
+$htmlContent = $htmlContent.Replace("{{CACHE_TEMP}}", ($cacheData.SystemTemporary.Windows_Temp_GB + $cacheData.SystemTemporary.User_Temp_GB))
+$htmlContent = $htmlContent.Replace("{{CACHE_TOTAL}}", $cacheData.Summary.TotalSafeCleanup_GB)
+
+# 5. Salva o relatório final na raiz do projeto
+$htmlContent | Out-File -FilePath $pathFinalReport -Encoding UTF8
+
+Write-Host "[+] Relatório compilado com sucesso com design Premium!" -ForegroundColor Green
+Write-Host "[*] Abrindo o Dashboard no seu navegador..." -ForegroundColor Yellow
+
+# Abre o navegador nativo para exibir o resultado
+Invoke-Item $pathFinalReport
