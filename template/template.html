@@ -33,11 +33,22 @@
                 </div>
             </div>
 
+            <!-- Card 2: Operating System -->
             <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl">
-                <h2 class="text-xl font-semibold text-purple-400 mb-4 flex items-center gap-2">Operating System</h2>
+                <h2 class="text-xl font-semibold text-purple-400 mb-4 flex items-center gap-2">🪟 Operating System</h2>
                 <div class="space-y-2 text-sm">
                     <p class="flex justify-between"><span class="text-slate-400">OS Name:</span> <span class="font-mono text-slate-200">{{WIN_NAME}}</span></p>
                     <p class="flex justify-between"><span class="text-slate-400">Build:</span> <span class="font-mono text-slate-200">{{WIN_BUILD}}</span></p>
+                    <p class="flex justify-between"><span class="text-slate-400">Branch (Winver):</span> <span class="font-mono text-slate-200">{{WIN_BRANCH}}</span></p>
+                    
+                    <!-- Divisor sutil para a seção de licença -->
+                    <div class="border-t border-slate-700/50 my-2 pt-2"></div>
+                    
+                    <p class="flex justify-between items-center"><span class="text-slate-400">License Status:</span> <span class="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">{{WIN_LICENSE_STATUS}}</span></p>
+                    <p class="flex justify-between"><span class="text-slate-400">License Channel:</span> <span class="font-mono text-slate-200">{{WIN_LICENSE_CHANNEL}}</span></p>
+                    <p class="flex justify-between"><span class="text-slate-400">Partial Key:</span> <span class="font-mono text-purple-400">*****-*****-*****-*****-{{WIN_LICENSE_KEY}}</span></p>
+                    
+                    <div class="border-t border-slate-700/50 my-2 pt-2"></div>
                     <p class="flex justify-between"><span class="text-slate-400">Uptime:</span> <span class="font-mono text-emerald-400">{{WIN_UPTIME}}</span></p>
                 </div>
             </div>

@@ -37,6 +37,10 @@ $htmlContent = $htmlContent.Replace("{{HW_BIOS}}", $hwData.BIOS.Version)
 # Dados do Windows
 $htmlContent = $htmlContent.Replace("{{WIN_NAME}}", $winData.OperatingSystem.Edition)
 $htmlContent = $htmlContent.Replace("{{WIN_BUILD}}", $winData.OperatingSystem.Build)
+$htmlContent = $htmlContent.Replace("{{WIN_BRANCH}}", $winData.OperatingSystem.Branch)
+$htmlContent = $htmlContent.Replace("{{WIN_LICENSE_STATUS}}", $winData.Licensing.Status)
+$htmlContent = $htmlContent.Replace("{{WIN_LICENSE_CHANNEL}}", $winData.Licensing.Channel)
+$htmlContent = $htmlContent.Replace("{{WIN_LICENSE_KEY}}", $winData.Licensing.PartialKey)
 $htmlContent = $htmlContent.Replace("{{WIN_UPTIME}}", "$($winData.Status.Uptime_Hours) Hours")
 
 # Dados de Caches
