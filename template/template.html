@@ -22,8 +22,10 @@
             </div>
         </header>
 
+        <!-- Primeira Linha do Dashboard -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
+            <!-- Card 1: Hardware -->
             <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl">
                 <h2 class="text-xl font-semibold text-cyan-400 mb-4 flex items-center gap-2">Hardware</h2>
                 <div class="space-y-2 text-sm">
@@ -53,6 +55,7 @@
                 </div>
             </div>
 
+            <!-- Card 3: Cache & Temp Alert -->
             <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl col-span-1 md:col-span-2 lg:col-span-1">
                 <h2 class="text-xl font-semibold text-amber-400 mb-4 flex items-center gap-2">Cache & Temp Alert</h2>
                 <div class="space-y-2 text-sm mb-4">
@@ -65,9 +68,61 @@
                     <p class="text-2xl font-bold text-amber-400 font-mono mt-1">{{CACHE_TOTAL}} GB</p>
                 </div>
             </div>
+        </div>
 
+        <!-- Segunda Linha do Dashboard: Expansão de Telemetria -->
+        <div class="grid grid-cols-1 gap-6 mt-6">
+            <!-- Card de Armazenamento Dinâmico -->
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl">
+                <h2 class="text-xl font-semibold text-cyan-400 mb-4 flex items-center gap-2">Storage Capacity & Health</h2>
+                <div id="storage-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Os cartões de discos serão injetados dinamicamente aqui via script -->
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- Script de Renderização de Telemetria de Armazenamento -->
+    <script>
+        // Captura o JSON injetado pelo PowerShell
+        const storageData = {{STORAGE_JSON_DATA}};
+        const container = document.getElementById('storage-container');
+
+        if (storageData && storageData.Drives) {
+            // Trata tanto se vier um drive único quanto um array de drives
+            const drives = Array.isArray(storageData.Drives) ? storageData.Drives : [storageData.Drives];
+            
+            drives.forEach(drive => {
+                const isCritical = drive.UsagePercentage >= 85;
+                const barColor = isCritical ? 'bg-red-500 animate-pulse' : 'bg-cyan-500';
+                const bgBadge = isCritical ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-slate-700/50 text-slate-300 border-slate-600/50';
+                const badgeText = isCritical ? 'STORAGE CRISIS' : 'HEALTHY';
+
+                const driveHtml = `
+                    <div class="bg-slate-900/50 p-4 rounded-lg border border-slate-700/60 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-base font-bold text-slate-200">Drive ${drive.Letter} (${drive.FileSystem})</span>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-semibold border ${bgBadge}">${badgeText}</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mb-4 font-mono">${drive.VolumeName || 'Local Disk'}</p>
+                            
+                            <!-- Barra de progresso baseada nos limites de engenharia -->
+                            <div class="w-full bg-slate-700 rounded-full h-3 overflow-hidden mb-2">
+                                <div class="${barColor} h-3 rounded-full transition-all duration-500" style="width: ${drive.UsagePercentage}%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between text-xs font-mono mt-2 pt-2 border-t border-slate-800">
+                            <div><span class="text-slate-500">Used:</span> <span class="text-slate-300">${Number(drive.Used_GB).toFixed(2)} GB</span></div>
+                            <div><span class="text-slate-500">Free:</span> <span class="text-slate-300">${Number(drive.Free_GB).toFixed(2)} GB</span></div>
+                            <div><span class="text-slate-500">Usage:</span> <span class="${isCritical ? 'text-red-400 font-bold' : 'text-slate-300'}">${drive.UsagePercentage}%</span></div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += driveHtml;
+            });
+        }
+    </script>
 </body>
 </html>

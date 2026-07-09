@@ -19,9 +19,10 @@ if (-not (Test-Path $pathTemplate)) {
 }
 
 # 2. Carrega e decodifica os arquivos JSON de forma segura
-$hwData    = Get-Content -Raw -Path (Join-Path $pathOutput "Hardware.json") | ConvertFrom-Json
-$winData   = Get-Content -Raw -Path (Join-Path $pathOutput "Windows.json") | ConvertFrom-Json
-$cacheData = Get-Content -Raw -Path (Join-Path $pathOutput "Caches.json") | ConvertFrom-Json
+$hwData      = Get-Content -Raw -Path (Join-Path $pathOutput "Hardware.json") | ConvertFrom-Json
+$winData     = Get-Content -Raw -Path (Join-Path $pathOutput "Windows.json") | ConvertFrom-Json
+$cacheData   = Get-Content -Raw -Path (Join-Path $pathOutput "Caches.json") | ConvertFrom-Json
+$storageRaw  = Get-Content -Raw -Path (Join-Path $pathOutput "Storage.json")
 
 # 3. Lê o conteúdo do arquivo de template
 $htmlContent = Get-Content -Raw -Path $pathTemplate
@@ -48,6 +49,7 @@ $htmlContent = $htmlContent.Replace("{{CACHE_NPM}}", $cacheData.DevelopmentCache
 $htmlContent = $htmlContent.Replace("{{CACHE_PIP}}", $cacheData.DevelopmentCaches.PIP_Cache_GB)
 $htmlContent = $htmlContent.Replace("{{CACHE_TEMP}}", ($cacheData.SystemTemporary.Windows_Temp_GB + $cacheData.SystemTemporary.User_Temp_GB))
 $htmlContent = $htmlContent.Replace("{{CACHE_TOTAL}}", $cacheData.Summary.TotalSafeCleanup_GB)
+$htmlContent = $htmlContent.Replace("{{STORAGE_JSON_DATA}}", $storageRaw)
 
 # 5. Salva o relatório final na raiz do projeto
 $htmlContent | Out-File -FilePath $pathFinalReport -Encoding UTF8
