@@ -69,14 +69,16 @@
             </div>
         </div>
 
-        <!-- Segunda Linha do Dashboard: Expansão de Telemetria -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        <!-- Segunda Linha do Dashboard: Expansão de Telemetria (Grid 3 Colunas) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
             
             <!-- Card de Armazenamento Dinâmico -->
-            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl">
-                <h2 class="text-xl font-semibold text-cyan-400 mb-4 flex items-center gap-2">💾 Storage Capacity & Health</h2>
-                <div id="storage-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Injetado dinamicamente via script -->
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl flex flex-col justify-between">
+                <div>
+                    <h2 class="text-xl font-semibold text-cyan-400 mb-4 flex items-center gap-2">💽 Storage Capacity & Health</h2>
+                    <div id="storage-container" class="space-y-4">
+                        <!-- Injetado dinamicamente via script -->
+                    </div>
                 </div>
             </div>
 
@@ -84,7 +86,7 @@
             <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl flex flex-col justify-between">
                 <div>
                     <h2 class="text-xl font-semibold text-amber-400 mb-4 flex items-center gap-2">🛠️ Dev Ecosystem & Tooling</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 gap-4">
                         <div class="bg-slate-900/40 p-4 rounded-lg border border-slate-700/40">
                             <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Core Tools</h3>
                             <div id="dev-tools-container" class="space-y-2 text-sm"></div>
@@ -97,6 +99,37 @@
                 </div>
             </div>
 
+            <!-- Card de Telemetria de Rede & Conectividade -->
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl flex flex-col justify-between">
+                <div>
+                    <h2 class="text-xl font-semibold text-emerald-400 mb-4 flex items-center gap-2">📡 Network & Latency</h2>
+                    <div class="space-y-4">
+                        <!-- Lista de Adaptadores Dinâmicos -->
+                        <div class="bg-slate-900/40 p-4 rounded-lg border border-slate-700/40">
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Active Adapters</h3>
+                            <div id="network-adapters-container" class="space-y-2 text-xs font-mono">
+                                <!-- Injetado via JS -->
+                            </div>
+                        </div>
+                        <!-- Métricas de Latência e Infra -->
+                        <div class="bg-slate-900/40 p-4 rounded-lg border border-slate-700/40 text-sm space-y-2">
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Routing & Latency</h3>
+                            <p class="flex justify-between"><span class="text-slate-400">Gateway:</span> <span class="font-mono text-slate-200" id="net-gateway">N/A</span></p>
+                            <p class="flex justify-between"><span class="text-slate-400">Public IP:</span> <span class="font-mono text-slate-200 text-xs" id="net-public">Checking...</span></p>
+                            <div class="border-t border-slate-700/40 my-2 pt-2"></div>
+                            <p class="flex justify-between items-center">
+                            <span class="text-slate-400">Ping Real-time:</span>
+                            <span class="font-mono text-[11px] flex flex-wrap gap-1.5 justify-end">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700/80" id="ping-gw">GW: --</span>
+                                <span class="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20" id="ping-google">Goo: --</span>
+                                <span class="px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-400 border border-orange-500/20" id="ping-cf">CF: --</span>
+                            </span>
+                        </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -104,6 +137,7 @@
     <script>
         const storageData = {{STORAGE_JSON_DATA}};
         const devData = {{DEV_JSON_DATA}};
+        const networkData = {{NETWORK_JSON_DATA}};
     </script>
 
     <!-- Invocação Segura Injetada do Script de Comportamento Externo -->
