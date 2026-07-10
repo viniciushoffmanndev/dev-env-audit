@@ -57,28 +57,21 @@
                 let cleanVersion = version;
 
                 if (isInstalled) {
-                    // Remove quebras de linha e espaços extras nas extremidades
                     cleanVersion = cleanVersion.replace(/[\r\n]+/g, ' ').trim();
 
-                    // Regras cirúrgicas de Regex baseadas no rótulo (Case-Insensitive)
                     if (name.toLowerCase() === 'git') {
-                        // Limpa "git version "
                         cleanVersion = cleanVersion.replace(/git\s+version\s+/i, '');
                     } 
                     else if (name.toLowerCase() === 'docker') {
-                        // Limpa "Docker version " mas preserva o build
                         cleanVersion = cleanVersion.replace(/docker\s+version\s+/i, '');
                     } 
                     else if (name.toLowerCase() === 'wsl') {
-                        // Remove "Versão do WSL:" ou caracteres corrompidos de encoding (VersÒo)
                         cleanVersion = cleanVersion.replace(/.*wsl[:\s]*/i, '');
                     } 
                     else if (name.toLowerCase() === 'python') {
-                        // Limpa "Python "
                         cleanVersion = cleanVersion.replace(/python\s+/i, '');
                     } 
                     else if (name.toLowerCase() === 'pip') {
-                        // Extrai estritamente "pip X.X" e depois descarta o caminho físico "from ..."
                         const match = cleanVersion.match(/pip\s+([^\s]+)/i);
                         cleanVersion = match ? match[1] : cleanVersion.split(' ')[0];
                     }
@@ -97,5 +90,47 @@
         }
         renderDevItems(devData.Tools, 'dev-tools-container');
         renderDevItems(devData.Runtimes, 'dev-runtimes-container');
+    }
+
+    // 3. Renderização de Telemetria de Rede & Conectividade (Módulo 06)
+    if (typeof networkData !== 'undefined' && networkData.Addressing) {
+        const adapterContainer = document.getElementById('network-adapters-container');
+        
+        if (adapterContainer && networkData.Addressing.Interfaces) {
+            const interfaces = Array.isArray(networkData.Addressing.Interfaces) 
+                ? networkData.Addressing.Interfaces 
+                : [networkData.Addressing.Interfaces];
+                
+            interfaces.forEach(net => {
+                const nameLower = net.InterfaceName.toLowerCase();
+                const isVirtual = nameLower.includes('vethernet') || 
+                                  nameLower.includes('wsl') || 
+                                  nameLower.includes('docker') ||
+                                  nameLower.includes('loopback');
+                
+                const badgeStyle = isVirtual 
+                    ? "bg-purple-500/10 text-purple-400 border-purple-500/20" 
+                    : "bg-cyan-500/10 text-cyan-400 border-cyan-500/20";
+
+                const rowHtml = `
+                    <div class="flex justify-between items-center py-1 border-b border-slate-800/40 last:border-0">
+                        <span class="text-slate-300 font-medium max-w-[160px] truncate" title="${net.InterfaceName}">${net.InterfaceName}</span>
+                        <span class="px-2 py-0.5 rounded text-[11px] border ${badgeStyle}">${net.IPAddress}</span>
+                    </div>
+                `;
+                adapterContainer.innerHTML += rowHtml;
+            });
+        }
+
+        // Preenche as informações básicas de endereçamento
+        document.getElementById('net-gateway').textContent = networkData.Addressing.Gateway || 'N/A';
+        document.getElementById('net-public').textContent = networkData.Addressing.PublicIP || 'Offline';
+
+        // Preenche e formata os dados de latência
+        const formatPing = (val) => typeof val === 'number' ? `${val}ms` : val;
+        
+        document.getElementById('ping-gw').textContent = `GW: ${formatPing(networkData.Latency_ms.Gateway)}`;
+        document.getElementById('ping-google').textContent = `Goo: ${formatPing(networkData.Latency_ms.Google)}`;
+        document.getElementById('ping-cf').textContent = `CF: ${formatPing(networkData.Latency_ms.Cloudflare)}`;
     }
 })();

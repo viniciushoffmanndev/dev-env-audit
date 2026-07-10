@@ -25,12 +25,14 @@ $winData     = Get-Content -Raw -Path (Join-Path $pathOutput "Windows.json") | C
 $cacheData   = Get-Content -Raw -Path (Join-Path $pathOutput "Caches.json") | ConvertFrom-Json
 $storageRaw  = Get-Content -Raw -Path (Join-Path $pathOutput "Storage.json")
 $devRaw      = Get-Content -Raw -Path (Join-Path $pathOutput "Development.json")
+$networkRaw  = Get-Content -Raw -Path (Join-Path $pathOutput "Network.json")
 
 # 3. Lê o conteúdo do arquivo de template
 $htmlContent = Get-Content -Raw -Path $pathTemplate
 
 # 4. Faz as substituições das tags pelos dados reais (Casando com o padrão em inglês)
 $htmlContent = $htmlContent.Replace("{{DATA_COLETA}}", $hwData.CollectedAt)
+$htmlContent = $htmlContent.Replace("{{NETWORK_JSON_DATA}}", $networkRaw)
 
 # Módulo 01: Dados do Hardware
 $htmlContent = $htmlContent.Replace("{{HW_CPU}}", $hwData.CPU.Name)
