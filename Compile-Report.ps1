@@ -9,9 +9,10 @@
 Write-Host "[*] Iniciando compilação do relatório gráfico..." -ForegroundColor Cyan
 
 # 1. Definição de caminhos
-$pathOutput = Join-Path -Path $PSScriptRoot -ChildPath "output"
-$pathTemplate = Join-Path -Path $PSScriptRoot -ChildPath "template\template.html"
+$pathOutput      = Join-Path -Path $PSScriptRoot -ChildPath "output"
+$pathTemplate    = Join-Path -Path $PSScriptRoot -ChildPath "template\template.html"
 $pathFinalReport = Join-Path -Path $PSScriptRoot -ChildPath "Dashboard.html"
+$jsRaw           = Get-Content -Raw -Path (Join-Path $PSScriptRoot "template\js\dashboard.js")
 
 if (-not (Test-Path $pathTemplate)) {
     Write-Error "Erro: Arquivo template.html não foi encontrado!"
@@ -23,6 +24,7 @@ $hwData      = Get-Content -Raw -Path (Join-Path $pathOutput "Hardware.json") | 
 $winData     = Get-Content -Raw -Path (Join-Path $pathOutput "Windows.json") | ConvertFrom-Json
 $cacheData   = Get-Content -Raw -Path (Join-Path $pathOutput "Caches.json") | ConvertFrom-Json
 $storageRaw  = Get-Content -Raw -Path (Join-Path $pathOutput "Storage.json")
+$devRaw      = Get-Content -Raw -Path (Join-Path $pathOutput "Development.json")
 
 # 3. Lê o conteúdo do arquivo de template
 $htmlContent = Get-Content -Raw -Path $pathTemplate
@@ -30,12 +32,12 @@ $htmlContent = Get-Content -Raw -Path $pathTemplate
 # 4. Faz as substituições das tags pelos dados reais (Casando com o padrão em inglês)
 $htmlContent = $htmlContent.Replace("{{DATA_COLETA}}", $hwData.CollectedAt)
 
-# Dados do Hardware
+# Módulo 01: Dados do Hardware
 $htmlContent = $htmlContent.Replace("{{HW_CPU}}", $hwData.CPU.Name)
 $htmlContent = $htmlContent.Replace("{{HW_RAM}}", $hwData.RAM.TotalInstalled_GB)
 $htmlContent = $htmlContent.Replace("{{HW_BIOS}}", $hwData.BIOS.Version)
 
-# Dados do Windows
+# Módulo 02: Dados do Windows
 $htmlContent = $htmlContent.Replace("{{WIN_NAME}}", $winData.OperatingSystem.Edition)
 $htmlContent = $htmlContent.Replace("{{WIN_BUILD}}", $winData.OperatingSystem.Build)
 $htmlContent = $htmlContent.Replace("{{WIN_BRANCH}}", $winData.OperatingSystem.Branch)
@@ -44,12 +46,20 @@ $htmlContent = $htmlContent.Replace("{{WIN_LICENSE_CHANNEL}}", $winData.Licensin
 $htmlContent = $htmlContent.Replace("{{WIN_LICENSE_KEY}}", $winData.Licensing.PartialKey)
 $htmlContent = $htmlContent.Replace("{{WIN_UPTIME}}", "$($winData.Status.Uptime_Hours) Hours")
 
-# Dados de Caches
+# Módulo 03: Dados de Armazenamento
+$htmlContent = $htmlContent.Replace("{{STORAGE_JSON_DATA}}", $storageRaw)
+
+# Módulo 04: Dados de Desenvolvimento
+$htmlContent = $htmlContent.Replace("{{DEV_JSON_DATA}}", $devRaw)
+
+# Módulo 05: Dados de Caches
 $htmlContent = $htmlContent.Replace("{{CACHE_NPM}}", $cacheData.DevelopmentCaches.NPM_Cache_GB)
 $htmlContent = $htmlContent.Replace("{{CACHE_PIP}}", $cacheData.DevelopmentCaches.PIP_Cache_GB)
 $htmlContent = $htmlContent.Replace("{{CACHE_TEMP}}", ($cacheData.SystemTemporary.Windows_Temp_GB + $cacheData.SystemTemporary.User_Temp_GB))
 $htmlContent = $htmlContent.Replace("{{CACHE_TOTAL}}", $cacheData.Summary.TotalSafeCleanup_GB)
-$htmlContent = $htmlContent.Replace("{{STORAGE_JSON_DATA}}", $storageRaw)
+
+# Injeção do Script de Comportamento Isolado
+$htmlContent = $htmlContent.Replace("{{DASHBOARD_JS_SCRIPT}}", $jsRaw)
 
 # 5. Salva o relatório final na raiz do projeto
 $htmlContent | Out-File -FilePath $pathFinalReport -Encoding UTF8
