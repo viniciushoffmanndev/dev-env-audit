@@ -34,13 +34,30 @@ if ($primaryAdapter) {
     if ($route) { $gateway = $route.NextHop }
 }
 
-# 3. Captura IP Público com Timeout de segurança
-$publicIP = try {
-    $webClient = New-Object System.Net.WebClient
-    $webClient.Timeout = 2000
-    $webClient.DownloadString("https://api.ipify.org").Trim()
-} catch {
-    "Offline / Blocked"
+# 3. Captura IP Público com Esteira de Fallback Avançada (Resiliente a bloqueios/rotas virtuais)
+$publicIP = "Offline / Blocked"
+$ipServices = @(
+    "https://api.ipify.org",
+    "https://icanhazip.com",
+    "https://ifconfig.me/ip"
+)
+
+foreach ($service in $ipServices) {
+    try {
+        # Usa o Invoke-RestMethod moderno com teto estrito de 2 segundos por tentativa
+        $response = Invoke-RestMethod -Uri $service -TimeoutSec 2 -ErrorAction Stop
+        if ($response) {
+            $cleanIP = $response.ToString().Trim()
+            # Validação rápida via Regex para garantir que o retorno é um formato IP válido
+            if ($cleanIP -match '^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$') {
+                $publicIP = $cleanIP
+                break # Encontrou um IP válido? Aborta o loop e segue o fluxo
+            }
+        }
+    } catch {
+        # Se falhar, o foreach pula silenciosamente para o próximo resolvedor da lista
+        continue
+    }
 }
 
 # 4. Medição robusta de Latência usando o .NET de infraestrutura
