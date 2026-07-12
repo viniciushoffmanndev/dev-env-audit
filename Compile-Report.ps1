@@ -26,13 +26,13 @@ $cacheData   = Get-Content -Raw -Path (Join-Path $pathOutput "Caches.json") | Co
 $storageRaw  = Get-Content -Raw -Path (Join-Path $pathOutput "Storage.json")
 $devRaw      = Get-Content -Raw -Path (Join-Path $pathOutput "Development.json")
 $networkRaw  = Get-Content -Raw -Path (Join-Path $pathOutput "Network.json")
+$gpuRaw      = Get-Content -Raw -Path (Join-Path $pathOutput "GPU.json")
 
 # 3. Lê o conteúdo do arquivo de template
 $htmlContent = Get-Content -Raw -Path $pathTemplate
 
 # 4. Faz as substituições das tags pelos dados reais (Casando com o padrão em inglês)
 $htmlContent = $htmlContent.Replace("{{DATA_COLETA}}", $hwData.CollectedAt)
-$htmlContent = $htmlContent.Replace("{{NETWORK_JSON_DATA}}", $networkRaw)
 
 # Módulo 01: Dados do Hardware
 $htmlContent = $htmlContent.Replace("{{HW_CPU}}", $hwData.CPU.Name)
@@ -59,6 +59,12 @@ $htmlContent = $htmlContent.Replace("{{CACHE_NPM}}", $cacheData.DevelopmentCache
 $htmlContent = $htmlContent.Replace("{{CACHE_PIP}}", $cacheData.DevelopmentCaches.PIP_Cache_GB)
 $htmlContent = $htmlContent.Replace("{{CACHE_TEMP}}", ($cacheData.SystemTemporary.Windows_Temp_GB + $cacheData.SystemTemporary.User_Temp_GB))
 $htmlContent = $htmlContent.Replace("{{CACHE_TOTAL}}", $cacheData.Summary.TotalSafeCleanup_GB)
+
+# Módulo 06: Dados de Rede
+$htmlContent = $htmlContent.Replace("{{NETWORK_JSON_DATA}}", $networkRaw)
+
+# Módulo 07: Dados de GPU
+$htmlContent = $htmlContent.Replace("{{GPU_JSON_DATA}}", $gpuRaw)
 
 # Injeção do Script de Comportamento Isolado
 $htmlContent = $htmlContent.Replace("{{DASHBOARD_JS_SCRIPT}}", $jsRaw)
