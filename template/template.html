@@ -22,54 +22,73 @@
             </div>
         </header>
 
-        <!-- Primeira Linha do Dashboard -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Primeira Linha do Dashboard: Estado do Sistema -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             
-            <!-- Card 1: Hardware -->
-            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl">
-                <h2 class="text-xl font-semibold text-cyan-400 mb-4 flex items-center gap-2">⚙️ Hardware</h2>
-                <div class="space-y-2 text-sm">
-                    <p class="flex justify-between"><span class="text-slate-400">CPU:</span> <span class="font-mono text-slate-200">{{HW_CPU}}</span></p>
-                    <p class="flex justify-between"><span class="text-slate-400">RAM Total:</span> <span class="font-mono text-slate-200">{{HW_RAM}} GB</span></p>
-                    <p class="flex justify-between"><span class="text-slate-400">BIOS:</span> <span class="font-mono text-slate-200">{{HW_BIOS}}</span></p>
+            <!-- Card: Operating System -->
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl flex flex-col justify-between">
+                <div>
+                    <h2 class="text-xl font-semibold text-purple-400 mb-4 flex items-center gap-2">🪟 Operating System</h2>
+                    <div class="space-y-2 text-sm">
+                        <p class="flex justify-between"><span class="text-slate-400">OS Name:</span> <span class="font-mono text-slate-200">{{WIN_NAME}}</span></p>
+                        <p class="flex justify-between"><span class="text-slate-400">Build:</span> <span class="font-mono text-slate-200">{{WIN_BUILD}}</span></p>
+                        <p class="flex justify-between"><span class="text-slate-400">Branch (Winver):</span> <span class="font-mono text-slate-200">{{WIN_BRANCH}}</span></p>
+                        <div class="border-t border-slate-700/50 my-2 pt-2"></div>
+                        <p class="flex justify-between items-center"><span class="text-slate-400">License Status:</span> <span class="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">{{WIN_LICENSE_STATUS}}</span></p>
+                        <p class="flex justify-between"><span class="text-slate-400">License Channel:</span> <span class="font-mono text-slate-200">{{WIN_LICENSE_CHANNEL}}</span></p>
+                        <p class="flex justify-between"><span class="text-slate-400">Partial Key:</span> <span class="font-mono text-purple-400">*****-*****-*****-*****-{{WIN_LICENSE_KEY}}</span></p>
+                        <div class="border-t border-slate-700/50 my-2 pt-2"></div>
+                        <p class="flex justify-between"><span class="text-slate-400">Uptime:</span> <span class="font-mono text-emerald-400">{{WIN_UPTIME}}</span></p>
+                    </div>
                 </div>
             </div>
 
-            <!-- Card 2: Operating System -->
-            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl">
-                <h2 class="text-xl font-semibold text-purple-400 mb-4 flex items-center gap-2">🪟 Operating System</h2>
-                <div class="space-y-2 text-sm">
-                    <p class="flex justify-between"><span class="text-slate-400">OS Name:</span> <span class="font-mono text-slate-200">{{WIN_NAME}}</span></p>
-                    <p class="flex justify-between"><span class="text-slate-400">Build:</span> <span class="font-mono text-slate-200">{{WIN_BUILD}}</span></p>
-                    <p class="flex justify-between"><span class="text-slate-400">Branch (Winver):</span> <span class="font-mono text-slate-200">{{WIN_BRANCH}}</span></p>
-                    
-                    <div class="border-t border-slate-700/50 my-2 pt-2"></div>
-                    
-                    <p class="flex justify-between items-center"><span class="text-slate-400">License Status:</span> <span class="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">{{WIN_LICENSE_STATUS}}</span></p>
-                    <p class="flex justify-between"><span class="text-slate-400">License Channel:</span> <span class="font-mono text-slate-200">{{WIN_LICENSE_CHANNEL}}</span></p>
-                    <p class="flex justify-between"><span class="text-slate-400">Partial Key:</span> <span class="font-mono text-purple-400">*****-*****-*****-*****-{{WIN_LICENSE_KEY}}</span></p>
-                    
-                    <div class="border-t border-slate-700/50 my-2 pt-2"></div>
-                    <p class="flex justify-between"><span class="text-slate-400">Uptime:</span> <span class="font-mono text-emerald-400">{{WIN_UPTIME}}</span></p>
-                </div>
-            </div>
-
-            <!-- Card 3: Cache & Temp Alert -->
-            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl col-span-1 md:col-span-2 lg:col-span-1">
-                <h2 class="text-xl font-semibold text-amber-400 mb-4 flex items-center gap-2">🧹 Cache & Temp Alert</h2>
-                <div class="space-y-2 text-sm mb-4">
-                    <p class="flex justify-between"><span class="text-slate-400">NPM Cache:</span> <span class="font-mono text-slate-200">{{CACHE_NPM}} GB</span></p>
-                    <p class="flex justify-between"><span class="text-slate-400">Pip Cache:</span> <span class="font-mono text-slate-200">{{CACHE_PIP}} GB</span></p>
-                    <p class="flex justify-between"><span class="text-slate-400">System Temp:</span> <span class="font-mono text-slate-200">{{CACHE_TEMP}} GB</span></p>
-                </div>
-                <div class="bg-amber-500/10 border border-amber-500/30 p-3 rounded-lg text-center">
-                    <p class="text-xs text-amber-400 font-medium">Safe Space to Recover:</p>
-                    <p class="text-2xl font-bold text-amber-400 font-mono mt-1">{{CACHE_TOTAL}} GB</p>
+            <!-- Card: Cache & Temp Alert -->
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl flex flex-col justify-between">
+                <div>
+                    <h2 class="text-xl font-semibold text-amber-400 mb-4 flex items-center gap-2">🧹 Cache & Temp Alert</h2>
+                    <div class="space-y-2 text-sm mb-4">
+                        <p class="flex justify-between"><span class="text-slate-400">NPM Cache:</span> <span class="font-mono text-slate-200">{{CACHE_NPM}} GB</span></p>
+                        <p class="flex justify-between"><span class="text-slate-400">Pip Cache:</span> <span class="font-mono text-slate-200">{{CACHE_PIP}} GB</span></p>
+                        <p class="flex justify-between"><span class="text-slate-400">System Temp:</span> <span class="font-mono text-slate-200">{{CACHE_TEMP}} GB</span></p>
+                    </div>
+                    <div class="bg-amber-500/10 border border-amber-500/30 p-3 rounded-lg text-center mt-auto">
+                        <p class="text-xs text-amber-400 font-medium">Safe Space to Recover:</p>
+                        <p class="text-2xl font-bold text-amber-400 font-mono mt-1">{{CACHE_TOTAL}} GB</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Segunda Linha do Dashboard: Expansão de Telemetria (Grid 3 Colunas) -->
+        <!-- Nova Linha Intermediária: Core Processing Power (Grid de 2 Colunas) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            
+            <!-- Card: Hardware Base (CPU & RAM) -->
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl flex flex-col justify-between">
+                <div>
+                    <h2 class="text-xl font-semibold text-cyan-400 mb-4 flex items-center gap-2">⚙️ Core Processing</h2>
+                    <div class="space-y-3 text-sm">
+                        <p class="flex flex-col gap-1"><span class="text-slate-400 text-xs uppercase tracking-wider font-bold">Processor:</span> <span class="font-mono text-slate-200 bg-slate-900/40 p-2 rounded border border-slate-700/40 text-xs">{{HW_CPU}}</span></p>
+                        <div class="grid grid-cols-2 gap-4 mt-2">
+                            <p class="bg-slate-900/40 p-3 rounded border border-slate-700/40 flex flex-col"><span class="text-slate-500 text-[10px] font-bold uppercase">RAM Installed</span><span class="font-mono text-lg text-cyan-400 font-bold mt-1">{{HW_RAM}} GB</span></p>
+                            <p class="bg-slate-900/40 p-3 rounded border border-slate-700/40 flex flex-col"><span class="text-slate-500 text-[10px] font-bold uppercase">BIOS Framework</span><span class="font-mono text-sm text-slate-300 font-semibold mt-2.5 truncate" title="{{HW_BIOS}}">{{HW_BIOS}}</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Dinâmico: Graphics Processing Units (GPUs) -->
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl flex flex-col justify-between">
+                <div>
+                    <h2 class="text-xl font-semibold text-pink-400 mb-4 flex items-center gap-2">🎮 Graphics Engines</h2>
+                    <div id="gpu-container" class="space-y-3">
+                        <!-- Injetado dinamicamente via Javascript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Linha Inferior: Expansão de Telemetria Ambiental (Grid de 3 Colunas) -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
             
             <!-- Card de Armazenamento Dinâmico -->
@@ -82,7 +101,7 @@
                 </div>
             </div>
 
-            <!-- Card de Ecossistema de Desenvolvimento (Tools & Runtimes) -->
+            <!-- Card de Ecossistema de Desenvolvimento -->
             <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl flex flex-col justify-between">
                 <div>
                     <h2 class="text-xl font-semibold text-amber-400 mb-4 flex items-center gap-2">🛠️ Dev Ecosystem & Tooling</h2>
@@ -104,27 +123,23 @@
                 <div>
                     <h2 class="text-xl font-semibold text-emerald-400 mb-4 flex items-center gap-2">📡 Network & Latency</h2>
                     <div class="space-y-4">
-                        <!-- Lista de Adaptadores Dinâmicos -->
                         <div class="bg-slate-900/40 p-4 rounded-lg border border-slate-700/40">
                             <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Active Adapters</h3>
-                            <div id="network-adapters-container" class="space-y-2 text-xs font-mono">
-                                <!-- Injetado via JS -->
-                            </div>
+                            <div id="network-adapters-container" class="space-y-2 text-xs font-mono"></div>
                         </div>
-                        <!-- Métricas de Latência e Infra -->
                         <div class="bg-slate-900/40 p-4 rounded-lg border border-slate-700/40 text-sm space-y-2">
                             <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Routing & Latency</h3>
                             <p class="flex justify-between"><span class="text-slate-400">Gateway:</span> <span class="font-mono text-slate-200" id="net-gateway">N/A</span></p>
                             <p class="flex justify-between"><span class="text-slate-400">Public IP:</span> <span class="font-mono text-slate-200 text-xs" id="net-public">Checking...</span></p>
                             <div class="border-t border-slate-700/40 my-2 pt-2"></div>
                             <p class="flex justify-between items-center">
-                            <span class="text-slate-400">Ping Real-time:</span>
-                            <span class="font-mono text-[11px] flex flex-wrap gap-1.5 justify-end">
-                                <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700/80" id="ping-gw">GW: --</span>
-                                <span class="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20" id="ping-google">Goo: --</span>
-                                <span class="px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-400 border border-orange-500/20" id="ping-cf">CF: --</span>
-                            </span>
-                        </p>
+                                <span class="text-slate-400">Ping Real-time:</span>
+                                <span class="font-mono text-[11px] flex flex-wrap gap-1.5 justify-end">
+                                    <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700/80" id="ping-gw">GW: --</span>
+                                    <span class="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20" id="ping-google">Goo: --</span>
+                                    <span class="px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-400 border border-orange-500/20" id="ping-cf">CF: --</span>
+                                </span>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -138,6 +153,7 @@
         const storageData = {{STORAGE_JSON_DATA}};
         const devData = {{DEV_JSON_DATA}};
         const networkData = {{NETWORK_JSON_DATA}};
+        const gpuData = {{GPU_JSON_DATA}};
     </script>
 
     <!-- Invocação Segura Injetada do Script de Comportamento Externo -->
