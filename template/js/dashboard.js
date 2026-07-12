@@ -133,4 +133,40 @@
         document.getElementById('ping-google').textContent = `Goo: ${formatPing(networkData.Latency_ms.Google)}`;
         document.getElementById('ping-cf').textContent = `CF: ${formatPing(networkData.Latency_ms.Cloudflare)}`;
     }
+    
+// 4. Renderização do Módulo de Placas de Vídeo (Módulo 07 - GPU)
+    if (typeof gpuData !== 'undefined' && gpuData.VideoCards) {
+        const gpuContainer = document.getElementById('gpu-container');
+        
+        if (gpuContainer) {
+            const cards = Array.isArray(gpuData.VideoCards) ? gpuData.VideoCards : [gpuData.VideoCards];
+            
+            cards.forEach(card => {
+                const isNvidia = card.Name.toLowerCase().includes('nvidia');
+                
+                // Atribuição de cores semântica baseada na marca da GPU
+                const brandBadge = isNvidia 
+                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+                    : 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+                
+                const formattedVRAM = typeof card.VRAM_GB === 'number' 
+                    ? `${card.VRAM_GB} GB` 
+                    : card.VRAM_GB;
+
+                const cardHtml = `
+                    <div class="bg-slate-900/40 p-3 rounded-lg border border-slate-700/40 flex flex-col justify-between text-xs">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-slate-200 font-bold font-sans truncate max-w-[220px]" title="${card.Name}">${card.Name}</span>
+                            <span class="px-1.5 py-0.5 rounded font-mono text-[10px] border ${brandBadge}">${formattedVRAM}</span>
+                        </div>
+                        <div class="flex justify-between items-center font-mono text-slate-400 mt-1">
+                            <span>Driver: <span class="text-slate-300 text-[11px]">${card.DriverVersion}</span></span>
+                            <span class="${card.Status === 'OK' ? 'text-emerald-400 font-bold' : 'text-amber-400'}">${card.Status}</span>
+                        </div>
+                    </div>
+                `;
+                gpuContainer.innerHTML += cardHtml;
+            });
+        }
+    }
 })();
